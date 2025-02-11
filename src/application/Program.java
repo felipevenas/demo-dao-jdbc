@@ -15,7 +15,8 @@ public class Program {
 		 * apenas é preciso chamar o método de criação em DaoFactory.
 		 */
 		
-		Seller seller = sellerDao.findById(3);
+		System.out.println("=== First Test: Seller findById ======");
+		Seller seller = sellerDao.findById(7);
 		
 		System.out.println(seller);
 		

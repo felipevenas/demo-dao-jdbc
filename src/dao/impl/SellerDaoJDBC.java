@@ -40,8 +40,9 @@ public class SellerDaoJDBC implements SellerDao {
 
 	@Override
 	public Seller findById(Integer id) {
-		PreparedStatement st = null;
-		ResultSet rs = null;
+		
+		PreparedStatement st = null; // --> Responsável por realizar consultados SQL na database.
+		ResultSet rs = null; // --> Responsável por representar os resultados das consultas SQL do Statement.
 		
 		try {
 			st = conn.prepareStatement(
@@ -50,22 +51,12 @@ public class SellerDaoJDBC implements SellerDao {
 					+ "ON seller.DepartmentId = department.Id "
 					+ "WHERE seller.Id = ?");
 			
-			st.setInt(1, id); // --> Passando o id declarado no escopo do método.
+			st.setInt(1, id); // --> Passando o id solicitado no escopo do método.
 			rs = st.executeQuery();
 			if (rs.next()) { 
-				Department dep = new Department();
-				// --> Criou a referência do objeto do tipo Department para acessar seus métodos e atulizar seus atributos.
-				dep.setId(rs.getInt("DepartmentId"));
-				dep.setName(rs.getString("DepName"));
-				Seller obj = new Seller();
-				// --> Criou a referência do objeto do tipo Seller para acessar seus métodos e atualizar seus atributos.
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-				obj.setDepartment(dep);
-				return obj;
+				Department dep = instanciateDepartment(rs);
+				Seller obj = instanciateSeller(rs, dep);
+				return obj; 
 			}
 			return null;
 		}
@@ -77,6 +68,24 @@ public class SellerDaoJDBC implements SellerDao {
 			DB.closeResultSet(rs);
 		}
 		
+	}
+
+	private Seller instanciateSeller(ResultSet rs, Department dep) throws SQLException {
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep);
+		return obj;
+	}
+
+	private Department instanciateDepartment(ResultSet rs) throws SQLException {
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId"));
+		dep.setName(rs.getString("DepName"));
+		return null;
 	}
 
 	@Override
